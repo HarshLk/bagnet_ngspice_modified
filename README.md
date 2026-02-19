@@ -40,3 +40,40 @@ For example:
 ```
 ./run.sh ./deep_ckt/efficient_ga/run_scripts/main.py specs/examples/cs_amp.yaml
 ```
+
+---
+
+# Detailed Architecture & Workflow
+
+BagNet is a high-efficiency analog design optimizer that uses a **Siamese Deep Neural Network (DNN)** as a surrogate filter to accelerate evolutionary search.
+
+### 1. Core Architecture
+- **BagNet Agent (`BagNetAgent`):** The central orchestrator that manages the optimization loop, integrating the machine learning model with the evolutionary search.
+- **Siamese DNN (`DropOutModel`):** A neural network (TensorFlow 1.x) that performs pairwise comparisons between designs. It predicts which design is "better" for specific specifications rather than predicting absolute performance. It uses **Monte Carlo Dropout** for Bayesian uncertainty estimation.
+- **Decision Box (`DecisionBox`):** A heuristic engine that identifies "critical specifications" (those contributing most to the cost function) and selects "reference designs" to guide the search.
+- **Custom EA (`CustomEA`):** An evolutionary algorithm (built on `deap`) that generates new candidate designs using crossover and mutation operators tailored for circuit parameters.
+- **NGSpice Integration (`bb_envs`):** A black-box evaluation engine that interfaces with NGSpice 2.7 for ground-truth simulations.
+
+### 2. Automated Netlist Generation
+Netlists are generated through a multi-layered process:
+- **YAML Configuration:** Parameters (widths, multipliers, capacitors) and their ranges are defined in `bb_envs/src/ngspice/envs/two_stage_opamp.yaml`.
+- **Jinja2 Templating:** Base circuit files in `bb_envs/src/ngspice/templates/two_stage_full/` (e.g., `two_stage_ol.cir`) contain placeholders like `{{ mp1 }}` or `{{ cc }}`.
+- **Rendering:** Python injects the optimized parameters into these templates to create unique `.cir` files for every simulation run.
+- **Multi-Bench Simulation:** For every design, the system typically runs 4 testbenches:
+    - **Open Loop (`ol`)**: Differential gain, UGBW, Phase Margin, Bias Current.
+    - **Common Mode (`cm`)**: Common-mode gain for CMRR calculation.
+    - **Power Supply (`ps`)**: Power supply gain for PSRR calculation.
+    - **Transient (`tran`)**: Settling time and systematic offset.
+
+### 3. Customization & Experiments
+To customize the optimization or run new experiments:
+- **To Change Constraints:** Update the `spec_range` in the environment YAML (e.g., `two_stage_opamp.yaml`).
+- **To Fix Parameters:** Set the range in the YAML to a single value (e.g., `mn4: [50, 50, 1]`) or hardcode the value directly in the `.cir` template.
+- **To Modify Topology:** Edit the SPICE templates in `bb_envs/src/ngspice/templates/`. You can add or remove transistors and add corresponding placeholders for the optimizer to explore.
+
+### 4. Logging & Performance Metrics
+- **Log Location:** Standard logs and plots are stored in `outputs/log/two_stage/bagnet/`.
+- **Netlist Segregation:** Successfully simulated netlists are automatically segregated:
+    - `outputs/netlists/good`: Netlists that improved the current best design performance.
+    - `outputs/netlists/bad`: All other successfully simulated netlists.
+- **Metrics Summary:** A summary CSV (`good_netlists_metrics.csv`) is generated containing detailed performance tables for all "good" designs, including Gain, UGBW, Phase Margin, Settling Time, PSRR, CMRR, and Offset.

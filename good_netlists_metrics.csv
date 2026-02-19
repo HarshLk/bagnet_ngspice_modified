@@ -1,0 +1,31 @@
+Metric,Result,Target Constraint,Status
+Design ID: 2J15JqHo,,,
+Gain,323.69,> 300.0,✅ Pass
+UGBW (Unity Gain BW),9.73 MHz,> 10.00 MHz,⚠️ Near
+Phase Margin (PM),48.86°,> 60.0°,❌ Fail
+Settling Time (Tset),107.90 ns,< 90.00 ns,❌ Fail
+PSRR,58.35,> 50.0 dB,✅ Pass
+CMRR,52.98,> 50.0 dB,✅ Pass
+Systematic Offset,0.50 mV,< 1.0 mV,✅ Pass
+Bias Current (Ibias),124.46 µA,< 200.0 µA,✅ Pass
+,,,
+Design ID: 3FHmWGTg,,,
+Gain,357.01,> 300.0,✅ Pass
+UGBW (Unity Gain BW),9.20 MHz,> 10.00 MHz,⚠️ Near
+Phase Margin (PM),62.85°,> 60.0°,✅ Pass
+Settling Time (Tset),65.32 ns,< 90.00 ns,✅ Pass
+PSRR,57.77,> 50.0 dB,✅ Pass
+CMRR,55.21,> 50.0 dB,✅ Pass
+Systematic Offset,0.26 mV,< 1.0 mV,✅ Pass
+Bias Current (Ibias),176.64 µA,< 200.0 µA,✅ Pass
+,,,
+Design ID: 3W3oLd6c,,,
+Gain,365.01,> 300.0,✅ Pass
+UGBW (Unity Gain BW),12.63 MHz,> 10.00 MHz,✅ Pass
+Phase Margin (PM),50.87°,> 60.0°,❌ Fail
+Settling Time (Tset),74.92 ns,< 90.00 ns,✅ Pass
+PSRR,58.19,> 50.0 dB,✅ Pass
+CMRR,55.90,> 50.0 dB,✅ Pass
+Systematic Offset,0.21 mV,< 1.0 mV,✅ Pass
+Bias Current (Ibias),179.96 µA,< 200.0 µA,✅ Pass
+,,,
